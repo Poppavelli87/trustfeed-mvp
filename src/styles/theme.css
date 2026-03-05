@@ -1,0 +1,61 @@
+﻿:root {
+  --trust-bg: #eef3f9;
+  --trust-surface: #ffffff;
+  --trust-border: #d8e1ed;
+  --trust-blue-900: #123a63;
+  --trust-blue-800: #1d4f82;
+  --trust-blue-700: #2d6ea7;
+  --trust-blue-100: #dcecff;
+  --trust-slate-700: #334155;
+  --trust-slate-500: #64748b;
+}
+
+html,
+body {
+  min-height: 100%;
+  background:
+    radial-gradient(80% 40% at 10% 0%, rgba(45, 110, 167, 0.15), transparent 60%),
+    radial-gradient(70% 35% at 90% 100%, rgba(18, 58, 99, 0.12), transparent 60%),
+    var(--trust-bg);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #98adc7 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #98adc7;
+  border-radius: 999px;
+}
+
+.app-phone-shell {
+  background: var(--trust-surface);
+  border: 1px solid var(--trust-border);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+}
+
+.tiktok-feed {
+  scroll-snap-type: y mandatory;
+  overscroll-behavior-y: contain;
+}
+
+.fade-slide-enter {
+  animation: fadeSlideIn 180ms ease-out;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

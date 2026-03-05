@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+﻿# TrustFeed MVP
 
-## Getting Started
+Mobile-first MVP for **TrustFeed**: a trust-based local business discovery experience for **roofing companies only**.
 
-First, run the development server:
+This concept is inspired by trust-directory patterns while remaining visually and legally distinct. It focuses on transparent trust signals, complaint handling, and quote workflows in a fast, swipe-friendly feed.
+
+## Tech Stack
+
+- Next.js (App Router)
+- React
+- TypeScript
+- Tailwind CSS
+- Local mock data only (no backend)
+
+## Run Locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Production check:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run build
+```
 
-## Learn More
+## MVP Features
 
-To learn more about Next.js, take a look at the following resources:
+- Mobile phone-sized centered app shell
+- TikTok-style vertical Discover feed with snap scrolling
+- Save / Hide actions on business cards
+- Optional swipe actions: right to Save, left to Hide
+- Full trust profile screen with segmented tabs:
+  - Overview
+  - Reviews
+  - Complaints
+  - Quote
+  - About
+- Quote request flow with local state submission
+- Consumer Quotes screen with request statuses
+- Saved screen with compare-and-act workflow
+- Business dashboard showing:
+  - Incoming quote leads
+  - Open complaint issues
+  - Recent reviews
+  - Trust strength meter and profile improvement suggestions
+- Subtle motion, toasts, and loading skeletons
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Data Structure Notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+All fictional data is in:
 
-## Deploy on Vercel
+- `src/data/businesses.ts`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Primary entity:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `RoofingBusiness` (`src/types/index.ts`)
+
+Key fields include:
+
+- `id`, `name`, `slug`, `logoInitials`
+- `city`, `state`, `serviceArea`
+- `trustGrade`, `accreditedStyleStatus`
+- `yearsInBusiness`, `foundedYear`
+- `verifiedLicense`, `insured`, `emergencyService`, `financingAvailable`
+- `quoteSpeed`, `quoteTurnaround`, `responseTime`
+- `reviewAverage`, `reviewCount`
+- `complaintsClosed`, `complaintsOpen`, `complaintResolutionRate`
+- `specialties`, `roofTypes`
+- `summary`, `about`, `ownerStory`
+- `badges`, `featuredTrustReason`, `quoteCTA`
+- nested `reviews[]`, `complaints[]`, `gallery[]`
+
+The dataset includes **24 distinct fictional roofing businesses** spanning premium, family-owned, storm-focused, commercial, bilingual, newer entrants, mixed-history legacy players, and fast-response high-volume profiles.
+
+Quote state model:
+
+- `QuoteRequest` in `src/types/index.ts`
+- Seeded in `initialQuoteRequests` and updated locally in UI state
+
+## Design Choices
+
+- **Trust-forward hierarchy:** grade, verification status, complaint resolution, and credentials are surfaced before marketing copy.
+- **Calm blue-forward visual language:** deep trust blues, white surfaces, restrained accents, and subtle shadows.
+- **Mobile-first interaction:** vertical feed cards with large tap targets and sticky bottom navigation.
+- **Transparency over hype:** complaints and response behavior are visible, not hidden.
+- **Demo realism over backend complexity:** rich local data and complete user/business flows without auth or external services.
+
+## Project Structure
+
+- `src/app/` - App Router entrypoints and global styles
+- `src/components/` - Reusable UI components and app container
+- `src/data/` - Mock roofing businesses and initial quote requests
+- `src/lib/` - Filtering and trust scoring utilities
+- `src/types/` - Shared TypeScript domain models
+- `src/styles/` - Theme tokens and shell/motion styles
