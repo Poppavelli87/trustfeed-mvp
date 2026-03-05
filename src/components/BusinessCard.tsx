@@ -26,30 +26,53 @@ export function BusinessCard({
   const [dragX, setDragX] = useState(0);
   const [dragging, setDragging] = useState(false);
   const pointerStartX = useRef<number | null>(null);
+  const pointerStartY = useRef<number | null>(null);
+  const swipeAxis = useRef<"x" | "y" | null>(null);
 
   function resetDrag() {
     pointerStartX.current = null;
+    pointerStartY.current = null;
+    swipeAxis.current = null;
     setDragging(false);
     setDragX(0);
   }
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
     pointerStartX.current = event.clientX;
+    pointerStartY.current = event.clientY;
+    swipeAxis.current = null;
     setDragging(true);
   }
 
   function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
-    if (!dragging || pointerStartX.current === null) return;
-    const delta = event.clientX - pointerStartX.current;
+    if (!dragging || pointerStartX.current === null || pointerStartY.current === null) return;
+
+    const deltaX = event.clientX - pointerStartX.current;
+    const deltaY = event.clientY - pointerStartY.current;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    if (swipeAxis.current === null && (absX > 6 || absY > 6)) {
+      swipeAxis.current = absX > absY ? "x" : "y";
+    }
+
+    if (swipeAxis.current !== "x") {
+      if (dragX !== 0) {
+        setDragX(0);
+      }
+      return;
+    }
+
+    const delta = deltaX;
     setDragX(Math.max(-120, Math.min(120, delta)));
   }
 
   function handlePointerUp() {
     if (!dragging) return;
 
-    if (dragX > swipeThreshold) {
+    if (swipeAxis.current === "x" && dragX > swipeThreshold) {
       onSave(business.id);
-    } else if (dragX < -swipeThreshold) {
+    } else if (swipeAxis.current === "x" && dragX < -swipeThreshold) {
       onHide(business.id);
     }
 
@@ -60,7 +83,7 @@ export function BusinessCard({
 
   return (
     <article
-      className="relative mx-3 mt-3 snap-start rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_8px_28px_rgba(15,23,42,0.08)]"
+      className="relative mx-3 my-3 h-full rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_8px_28px_rgba(15,23,42,0.08)]"
       aria-label={`${business.name} card`}
     >
       <div
@@ -68,7 +91,7 @@ export function BusinessCard({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={resetDrag}
-        className="transition-transform duration-150"
+        className="swipe-surface h-full transition-transform duration-150"
         style={{ transform: `translateX(${dragX}px)` }}
       >
         <header className="mb-3 flex items-start justify-between gap-3">
