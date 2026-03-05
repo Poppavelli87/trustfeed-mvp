@@ -87,11 +87,30 @@ export function TrustFeedApp() {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const toastSequence = useRef(0);
   const batchSequence = useRef(5000);
+  const discoverModeActive = activeView === "discover" && profileBusinessId === null;
 
   useEffect(() => {
     const timer = window.setTimeout(() => setIsLoading(false), 650);
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+
+    if (discoverModeActive) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+    };
+  }, [discoverModeActive]);
 
   function pushToast(message: string) {
     toastSequence.current += 1;
@@ -153,19 +172,19 @@ export function TrustFeedApp() {
 
       return {
         id: `quote-batch-${sequence}`,
-      businessId: business.id,
-      businessName: business.name,
-      consumerName: "Saved Comparison Request",
-      zipCode: "00000",
-      roofType: "Not sure",
-      serviceNeeded: "Compare saved roofers",
-      timeline: "Planning stage",
-      insuranceClaim: "No" as const,
-      notes: "User requested quote outreach from Saved.",
-      status: "Request sent" as const,
-      estimatedResponse: estimateResponse(business.quoteSpeed),
-      createdAt,
-      updates: ["Request sent"],
+        businessId: business.id,
+        businessName: business.name,
+        consumerName: "Saved Comparison Request",
+        zipCode: "00000",
+        roofType: "Not sure",
+        serviceNeeded: "Compare saved roofers",
+        timeline: "Planning stage",
+        insuranceClaim: "No" as const,
+        notes: "User requested quote outreach from Saved.",
+        status: "Request sent" as const,
+        estimatedResponse: estimateResponse(business.quoteSpeed),
+        createdAt,
+        updates: ["Request sent"],
       };
     });
 
@@ -223,7 +242,12 @@ export function TrustFeedApp() {
 
   function renderDiscoverView() {
     return (
-      <div className="flex h-full flex-col">
+      <section className="flex h-full min-h-0 flex-col overflow-hidden">
+        <div className="border-b border-slate-200 bg-white px-4 py-3">
+          <h1 className="font-[var(--font-source-serif)] text-xl font-semibold text-slate-900">Trusted roofing professionals</h1>
+          <p className="mt-1 text-xs text-slate-600">Swipe or scroll to compare trust signals and request quotes quickly.</p>
+        </div>
+
         <FilterBar
           filters={filters}
           cities={discoverCities}
@@ -232,16 +256,15 @@ export function TrustFeedApp() {
           onReset={() => setFilters(defaultFilters)}
         />
 
-        <div className="tiktok-feed min-h-0 flex-1 overflow-y-auto pb-4">
-          <div className="px-4 pt-3">
-            <h1 className="font-[var(--font-source-serif)] text-xl font-semibold text-slate-900">Trusted roofing professionals</h1>
-            <p className="mt-1 text-xs text-slate-600">Scroll to compare trust signals, complaint response history, and quote speed.</p>
-          </div>
-
+        <div className="discover-feed-scroll tiktok-feed min-h-0 flex-1" data-testid="discover-feed">
           {isLoading ? (
             <>
-              <BusinessCardSkeleton />
-              <BusinessCardSkeleton />
+              <div className="discover-snap-card">
+                <BusinessCardSkeleton />
+              </div>
+              <div className="discover-snap-card">
+                <BusinessCardSkeleton />
+              </div>
             </>
           ) : discoverBusinesses.length === 0 ? (
             <div className="mx-4 mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
@@ -250,7 +273,7 @@ export function TrustFeedApp() {
             </div>
           ) : (
             discoverBusinesses.map((business) => (
-              <div key={business.id} className="min-h-[72svh] snap-start fade-slide-enter">
+              <section key={business.id} className="discover-snap-card fade-slide-enter" data-testid={`discover-card-${business.id}`}>
                 <BusinessCard
                   business={business}
                   isSaved={savedIds.includes(business.id)}
@@ -259,11 +282,11 @@ export function TrustFeedApp() {
                   onViewProfile={(id) => openProfile(id, "overview")}
                   onGetQuote={(id) => openProfile(id, "quote")}
                 />
-              </div>
+              </section>
             ))
           )}
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -592,9 +615,9 @@ export function TrustFeedApp() {
   }
 
   return (
-    <main className="min-h-screen px-3 py-4 md:px-8 md:py-8">
+    <main className="app-root box-border px-3 py-4 md:px-8 md:py-8">
       <ToastStack toasts={toasts} />
-      <div className="mx-auto flex min-h-[94svh] w-full max-w-[440px] flex-col overflow-hidden rounded-[30px] app-phone-shell">
+      <div className="mx-auto flex h-full w-full max-w-[440px] flex-col overflow-hidden rounded-[30px] app-phone-shell md:h-[94svh]">
         <div className="border-b border-slate-200 bg-[linear-gradient(110deg,#123a63,#2d6ea7)] px-4 py-3 text-white">
           <p className="font-[var(--font-source-serif)] text-lg font-semibold tracking-wide">TrustFeed</p>
           <p className="text-xs text-blue-100">Trust-centered local roofing discovery concept</p>

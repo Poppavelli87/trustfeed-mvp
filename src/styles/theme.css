@@ -40,9 +40,39 @@ body {
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
 }
 
+.app-root {
+  height: 100vh;
+  height: 100dvh;
+}
+
 .tiktok-feed {
   scroll-snap-type: y mandatory;
   overscroll-behavior-y: contain;
+}
+
+.discover-feed-scroll {
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: y mandatory;
+  touch-action: pan-y;
+}
+
+.discover-snap-card {
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: stretch;
+}
+
+.swipe-surface {
+  touch-action: pan-y;
 }
 
 .fade-slide-enter {
